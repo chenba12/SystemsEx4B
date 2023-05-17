@@ -25,7 +25,6 @@ Team::Team(const Team &other)
 Team::Team(Team &&other) noexcept: characters(other.characters),
                                    leader(other.leader) { other.leader = nullptr; }
 
-//TODO fix
 Team &Team::operator=(const Team &other) {
     if (this != &other) {
         characters = other.characters;
@@ -35,7 +34,6 @@ Team &Team::operator=(const Team &other) {
     return *this;
 }
 
-//TODO fix
 Team &Team::operator=(Team &&other) noexcept {
     if (this != &other) {
         characters = other.characters;
@@ -77,7 +75,6 @@ void Team::add(Character *character) {
     throw std::runtime_error("the team is full");
 }
 
-//TODO implement
 /**
  * does something
  * @param enemyTeam

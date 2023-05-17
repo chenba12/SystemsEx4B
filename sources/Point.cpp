@@ -56,7 +56,6 @@ std::string Point::print() const {
     return "(" + std::to_string(this->xVal) + "," + std::to_string(this->yVal) + ")";
 }
 
-//TODO fix this
 Point Point::moveTowards(const Point &src, const Point &dest, double distance) {
     if (distance < 0) {
         throw std::invalid_argument("distance can't be below zero");
