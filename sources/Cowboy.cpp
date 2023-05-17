@@ -19,11 +19,14 @@ Cowboy::Cowboy(std::string name, Point location) :
  * @throws logic_error if the enemy is already dead
  */
 void Cowboy::shoot(Character *enemy) {
+    if (!isAlive())throw std::runtime_error("I'm dead :(");
     if (!enemy->isAlive()) throw std::runtime_error("Enemy is already dead");
     if (enemy == this) throw std::runtime_error("Can't hit myself :(");
     if (hasboolets()) {
-        if (enemy->isAlive())enemy->hit(cowboyDamage);
-        else throw std::logic_error("the enemy is dead");
+        if (enemy->isAlive()) {
+            enemy->hit(cowboyDamage);
+            bullets--;
+        } else throw std::logic_error("the enemy is dead");
     } else {
         this->reload();
     }
@@ -42,7 +45,6 @@ bool Cowboy::hasboolets() const {
  */
 void Cowboy::reload() {
     if (!isAlive()) throw std::runtime_error("I'm already dead :(");
-    if (bullets == maxBullets) throw std::runtime_error("got max bullets already");
     bullets = 6;
 }
 

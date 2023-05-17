@@ -22,9 +22,10 @@ namespace ariel {
     public:
         void move(Character *enemy);
 
-        void slash(Character *enemy) const;
+        void slash(Character *enemy);
 
         int getSpeed() const;
+
     };
 }
 

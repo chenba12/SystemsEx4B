@@ -8,5 +8,5 @@ using namespace ariel;
  * @param location
  */
 TrainedNinja::TrainedNinja(const std::string &name, const Point &location) : Ninja(
-        name, location, trainedNinjaHP, trainedNinjaSpeed, typeTrainedNinja
+        name, location, trainedNinjaHP, trainedNinjaSpeed, typeNinja
 ) {}

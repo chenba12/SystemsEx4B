@@ -38,9 +38,19 @@ namespace ariel {
 
         Character *getLeader() const;
 
+        Character *findClosestTarget(Team *team);
+
         virtual ~Team();
 
         void deleteArr() const;
+
+        Character * cowboyAttacking(Team *enemyTeam, Character *victim, size_t index);
+
+        Character *ninjaAttacking(Team *enemyTeam, Character *victim, size_t index);
+
+        void setLeader(Character *newLeader);
+
+        void swapLeaderIfNeeded();
     };
 }
 

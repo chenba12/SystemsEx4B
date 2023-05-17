@@ -82,7 +82,7 @@ double Character::distance(Character *otherChar) {
  * @param damage
  */
 void Character::hit(int damage) {
-    if (damage < 0) throw std::runtime_error("Damage can't be below zero");
+    if (damage < 0) throw std::invalid_argument("Damage can't be below zero");
     this->hitPoints -= damage;
 }
 
@@ -92,7 +92,7 @@ void Character::hit(int damage) {
  */
 std::string Character::print() const {
     std::string typeString;
-    if (this->type == typeYoungNinja || this->type == typeOldNinja || this->type == typeTrainedNinja) {
+    if (this->type == typeNinja) {
         typeString = 'N';
     } else if (this->type == typeCowboy) {
         typeString = 'C';
@@ -140,6 +140,10 @@ bool Character::isTeamMember() const {
 
 void Character::setTeamMember() {
     Character::teamMember = !teamMember;
+}
+
+void Character::setLocation(const Point &newLocation) {
+    Character::location = newLocation;
 }
 
 

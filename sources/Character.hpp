@@ -6,7 +6,7 @@
 
 namespace ariel {
     enum characterType {
-        noType = 0, typeYoungNinja = 1, typeTrainedNinja = 2, typeOldNinja = 3, typeCowboy = 4
+        noType = 0, typeNinja = 1, typeCowboy = 2
     };
 
     class Character {
@@ -30,7 +30,6 @@ namespace ariel {
 
         Character &operator=(Character &&other) noexcept;
 
-
         virtual ~Character();
 
         bool isAlive() const;
@@ -41,9 +40,9 @@ namespace ariel {
 
         virtual std::string print() const;
 
-        bool isDefault() const;
-
         const Point &getLocation() const;
+
+        void setLocation(const Point &location);
 
         int getHp() const;
 
@@ -54,6 +53,8 @@ namespace ariel {
         bool isTeamMember() const;
 
         void setTeamMember();
+
+
 
     };
 }

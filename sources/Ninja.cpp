@@ -22,7 +22,7 @@ Ninja::Ninja(std::string name, Point location, int hitPoints, int speed, enum ch
  */
 void Ninja::move(Character *enemy) {
     if (!enemy->isAlive()) throw std::runtime_error("enemy is dead");
-    Point::moveTowards(this->getLocation(), enemy->getLocation(), speed);
+    this->setLocation(Point::moveTowards(this->getLocation(), enemy->getLocation(), speed));
 }
 
 /**
@@ -37,11 +37,11 @@ int Ninja::getSpeed() const {
  * @param enemy
  * @throws logic_error if the target is out of range
  */
-void Ninja::slash(Character *enemy) const {
+void Ninja::slash(Character *enemy) {
+    if (!isAlive())throw std::runtime_error("I'm dead :(");
+    if (!enemy->isAlive())throw std::runtime_error("enemy is dead dead :(");
     if (enemy == this) throw std::runtime_error("Can't hit myself :(");
-    if (this->getLocation().distance(enemy->getLocation()) < 1) {
+    if (this->getLocation().distance(enemy->getLocation()) <= 1) {
         enemy->hit(ninjaDamage);
-    } else {
-        throw std::logic_error("out of range");
     }
 }

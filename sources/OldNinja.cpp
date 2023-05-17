@@ -10,5 +10,5 @@ using namespace ariel;
  * @param location
  */
 OldNinja::OldNinja(std::string name, Point location) :
-        Ninja(std::move(name), location, oldNinjaHP, oldNinjaSpeed, typeOldNinja) {}
+        Ninja(std::move(name), std::move(location), oldNinjaHP, oldNinjaSpeed, typeNinja) {}
 
