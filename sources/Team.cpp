@@ -17,14 +17,25 @@ Team::Team(Character *leader) {
     characters.at(0) = this->leader;
 
 }
-
+/**
+ * copy ctr
+ * @param other
+ */
 Team::Team(const Team &other)
         : characters(other.characters),
           leader(new Character(*(other.leader))) {}
-
+/**
+ * move copy ctr
+ * @param other
+ */
 Team::Team(Team &&other) noexcept: characters(other.characters),
                                    leader(other.leader) { other.leader = nullptr; }
 
+/**
+ *  copy assigment operator
+ * @param other
+ * @return
+ */
 Team &Team::operator=(const Team &other) {
     if (this != &other) {
         characters = other.characters;
@@ -33,7 +44,11 @@ Team &Team::operator=(const Team &other) {
     }
     return *this;
 }
-
+/**
+ * move assignment operator
+ * @param other
+ * @return
+ */
 Team &Team::operator=(Team &&other) noexcept {
     if (this != &other) {
         characters = other.characters;
@@ -50,6 +65,9 @@ Team::~Team() {
     deleteArr();
 }
 
+/**
+ * used for destructor
+ */
 void Team::deleteArr() const {
     for (auto &character: characters) {
         delete character;
@@ -60,6 +78,7 @@ void Team::deleteArr() const {
 /**
  * find an empty place in the team members list and add the character
  * @param character
+ * @throws runtime_error if the team is full or the character to add is in another team
  */
 void Team::add(Character *character) {
     if (character->isTeamMember()) {
@@ -76,8 +95,11 @@ void Team::add(Character *character) {
 }
 
 /**
- * does something
+ * use the characters in this team to attack the other team
+ * cowboys attack first and then ninjas
  * @param enemyTeam
+ * @throws runtime_error if the enemy team is already dead
+ * @throws invalid_argument if entered a nullptr
  */
 void Team::attack(Team *enemyTeam) {
     if (enemyTeam == nullptr) {
@@ -87,20 +109,29 @@ void Team::attack(Team *enemyTeam) {
     swapLeaderIfNeeded();
     Character *victim = findClosestTarget(enemyTeam);
     for (size_t i = 0; i < maxCharacters; ++i) {
+        Character *member = characters.at(i);
         if (characters.at(i) != nullptr) {
-            victim = cowboyAttacking(enemyTeam, victim, i);
+            victim = cowboyAttacking(enemyTeam, victim, member);
         }
     }
     for (size_t i = 0; i < maxCharacters; ++i) {
-        if (characters.at(i) != nullptr) {
-            victim = ninjaAttacking(enemyTeam, victim, i);
+        Character *member = characters.at(i);
+        if (member != nullptr) {
+            victim = ninjaAttacking(enemyTeam, victim, member);
         }
     }
 }
 
-Character *Team::ninjaAttacking(Team *enemyTeam, Character *victim, size_t index) {
-    if (characters.at(index)->getType() == typeNinja) {
-        auto *ninja = dynamic_cast<Ninja *>(characters.at(index));
+/**
+ * attack the victim if he is alive else find a new victim
+ * @param enemyTeam
+ * @param victim
+ * @param member the character to attack with
+ * @return the victim
+ */
+Character *Team::ninjaAttacking(Team *enemyTeam, Character *victim, Character *member) {
+    if (member->getType() == typeNinja) {
+        auto *ninja = dynamic_cast<Ninja *>(member);
         if (victim == nullptr || !victim->isAlive()) victim = findClosestTarget(enemyTeam);
         if (victim != nullptr && ninja->isAlive() && victim->isAlive()) {
             if (ninja->distance(victim) <= 1) ninja->slash(victim);
@@ -110,9 +141,16 @@ Character *Team::ninjaAttacking(Team *enemyTeam, Character *victim, size_t index
     return victim;
 }
 
-Character *Team::cowboyAttacking(Team *enemyTeam, Character *victim, size_t index) {
-    if (characters.at(index)->getType() == typeCowboy) {
-        auto *cowboy = dynamic_cast<Cowboy *>(characters.at(index));
+/**
+ * attack the victim if he is alive else find a new victim
+ * @param enemyTeam
+ * @param victim
+ * @param member the character to attack with
+ * @return the victim
+ */
+Character *Team::cowboyAttacking(Team *enemyTeam, Character *victim, Character *member) {
+    if (member->getType() == typeCowboy) {
+        auto *cowboy = dynamic_cast<Cowboy *>(member);
         if (victim == nullptr || !victim->isAlive()) victim = findClosestTarget(enemyTeam);
         if (victim != nullptr && cowboy->isAlive() && victim->isAlive()) cowboy->shoot(victim);
     }
@@ -160,6 +198,11 @@ Character *Team::getLeader() const {
     return leader;
 }
 
+/**
+ * find the closest target to your leader from the other team
+ * @param team enemy team
+ * @return the character to attack
+ */
 Character *Team::findClosestTarget(Team *team) {
     double minDistanceFromLeader = std::numeric_limits<double>::max();
     double temp;
@@ -178,10 +221,16 @@ Character *Team::findClosestTarget(Team *team) {
     return closestCharacter;
 }
 
+/**
+ * @param newLeader
+ */
 void Team::setLeader(Character *newLeader) {
     Team::leader = newLeader;
 }
 
+/**
+ * swap the leader if it's dead
+ */
 void Team::swapLeaderIfNeeded() {
     if (!this->leader->isAlive()) {
         Character *newLeader = findClosestTarget(this);

@@ -33,8 +33,16 @@ Character &Character::operator=(const Character &other) {
     return *this;
 }
 
+/**
+ * copy ctr
+ * @param other
+ */
 Character::Character(const Character &other) = default;
 
+/**
+ * move assignment ctr
+ * @param other
+ */
 Character::Character(Character &&other) noexcept {
     location = other.location;
     hitPoints = other.hitPoints;
@@ -48,6 +56,11 @@ Character::Character(Character &&other) noexcept {
     other.teamMember = false;
 }
 
+/**
+ * move assignment operator
+ * @param other
+ * @return this
+ */
 Character &Character::operator=(Character &&other) noexcept {
     if (this != &other) {
         location = other.location;
@@ -58,6 +71,9 @@ Character &Character::operator=(Character &&other) noexcept {
     return *this;
 }
 
+/**
+ * destructor
+ */
 Character::~Character() = default;
 
 /**
@@ -80,6 +96,7 @@ double Character::distance(Character *otherChar) {
 /**
  * remove hitPoints based on the damage param
  * @param damage
+ * @throws invalid_argument if damage is negative
  */
 void Character::hit(int damage) {
     if (damage < 0) throw std::invalid_argument("Damage can't be below zero");
@@ -134,14 +151,24 @@ characterType Character::getType() const {
     return type;
 }
 
+/**
+ * @return if the character is in a team
+ */
 bool Character::isTeamMember() const {
     return teamMember;
 }
 
+/**
+ * assign the character to a team
+ */
 void Character::setTeamMember() {
     Character::teamMember = !teamMember;
 }
 
+/**
+ * set a new location for the character
+ * @param newLocation point
+ */
 void Character::setLocation(const Point &newLocation) {
     Character::location = newLocation;
 }

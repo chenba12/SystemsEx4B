@@ -16,7 +16,7 @@ Cowboy::Cowboy(std::string name, Point location) :
 /**
  * shoot an enemy character if the cowboy have enough bullets else reload
  * @param enemy
- * @throws logic_error if the enemy is already dead
+ * @throws runtime_error if the enemy is already dead/this is dead/trying to hit shoot yourself
  */
 void Cowboy::shoot(Character *enemy) {
     if (!isAlive())throw std::runtime_error("I'm dead :(");
@@ -41,7 +41,7 @@ bool Cowboy::hasboolets() const {
 
 /**
  * reload the cowboy's gun
- * @throws logic_error if the cowboy have the max amount of bullets
+ * @throws runtime_error if the cowboy already dead
  */
 void Cowboy::reload() {
     if (!isAlive()) throw std::runtime_error("I'm already dead :(");

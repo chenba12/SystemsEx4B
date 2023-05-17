@@ -35,7 +35,7 @@ int Ninja::getSpeed() const {
 /**
  * slashing an enemy if the distance between the 2 is <1
  * @param enemy
- * @throws logic_error if the target is out of range
+ * @throws runtime_error if the ninja is dead/enemy is dead/trying to slash yourself
  */
 void Ninja::slash(Character *enemy) {
     if (!isAlive())throw std::runtime_error("I'm dead :(");

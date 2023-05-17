@@ -17,17 +17,33 @@ Point::Point(double xVal, double yVal) : xVal(xVal), yVal(yVal) {}
  */
 Point::Point() : xVal(0), yVal(0) {}
 
+/**
+ * copy assignment operator
+ * @param other
+ * @return
+ */
 Point &Point::operator=(const Point &other) = default;
 
+/**
+ *
+ * @param other
+ */
 Point::Point(const Point &other) = default;
 
+/**
+ * move constructor
+ * @param other
+ */
 Point::Point(Point &&other) noexcept {
     xVal = other.xVal;
     yVal = other.yVal;
-    other.xVal = 0;
-    other.yVal = 0;
 }
 
+/**
+ * move assignment
+ * @param other
+ * @return this
+ */
 Point &Point::operator=(Point &&other) noexcept {
     if (this != &other) {
         xVal = other.xVal;
@@ -36,6 +52,9 @@ Point &Point::operator=(Point &&other) noexcept {
     return *this;
 }
 
+/**
+ * destructor
+ */
 Point::~Point() = default;
 
 /**
@@ -56,6 +75,14 @@ std::string Point::print() const {
     return "(" + std::to_string(this->xVal) + "," + std::to_string(this->yVal) + ")";
 }
 
+/**
+ * move to the closest point near the destination based on the distance from the source
+ * using euclidean distance
+ * @param src point
+ * @param dest point
+ * @param distance
+ * @return the closest point
+ */
 Point Point::moveTowards(const Point &src, const Point &dest, double distance) {
     if (distance < 0) {
         throw std::invalid_argument("distance can't be below zero");
