@@ -92,10 +92,9 @@ Point Point::moveTowards(const Point &src, const Point &dest, double distance) {
     double magnitude = std::sqrt(dx * dx + dy * dy);
     if (magnitude <= distance) {
         return dest;
-    } else {
-        double ratio = distance / magnitude;
-        return {src.xVal + ratio * dx, src.yVal + ratio * dy};
     }
+    double ratio = distance / magnitude;
+    return {src.xVal + ratio * dx, src.yVal + ratio * dy};
 }
 
 /**
