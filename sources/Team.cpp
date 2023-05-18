@@ -17,6 +17,7 @@ Team::Team(Character *leader) {
     characters.at(0) = this->leader;
 
 }
+
 /**
  * copy ctr
  * @param other
@@ -24,6 +25,7 @@ Team::Team(Character *leader) {
 Team::Team(const Team &other)
         : characters(other.characters),
           leader(new Character(*(other.leader))) {}
+
 /**
  * move copy ctr
  * @param other
@@ -44,6 +46,7 @@ Team &Team::operator=(const Team &other) {
     }
     return *this;
 }
+
 /**
  * move assignment operator
  * @param other
@@ -81,7 +84,7 @@ void Team::deleteArr() const {
  * @throws runtime_error if the team is full or the character to add is in another team
  */
 void Team::add(Character *character) {
-    if (character== nullptr) throw std::invalid_argument("got nullptr");
+    if (character == nullptr) throw std::invalid_argument("got nullptr");
     if (character->isTeamMember()) {
         throw std::runtime_error("character already in another team");
     }
@@ -175,12 +178,21 @@ int Team::stillAlive() {
 }
 
 /**
- * print all the characters in the team
+ * print all the characters in the team cowboys first and then ninjas
  */
 void Team::print() {
     for (size_t i = 0; i < maxCharacters; ++i) {
         if (characters.at(i) != nullptr) {
-            std::cout << characters.at(i)->print() << std::endl;
+            if (characters.at(i)->getType() == typeCowboy) {
+                std::cout << characters.at(i)->print() << std::endl;
+            }
+        }
+    }
+    for (size_t i = 0; i < maxCharacters; ++i) {
+        if (characters.at(i) != nullptr) {
+            if (characters.at(i)->getType() == typeNinja) {
+                std::cout << characters.at(i)->print() << std::endl;
+            }
         }
     }
 }

@@ -32,7 +32,7 @@ namespace ariel {
 
         int stillAlive();
 
-        void print();
+        virtual void print();
 
         const std::array<Character *, maxCharacters> &getCharacters() const;
 

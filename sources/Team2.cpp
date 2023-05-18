@@ -27,3 +27,14 @@ void Team2::attack(Team *enemyTeam) {
     }
 }
 
+/**
+ * print by order of insertion
+ */
+void Team2::print() {
+    for (size_t i = 0; i < maxCharacters; ++i) {
+        if (getCharacters().at(i) != nullptr) {
+            std::cout << getCharacters().at(i)->print() << std::endl;
+        }
+    }
+}
+

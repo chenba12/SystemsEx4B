@@ -11,6 +11,8 @@ namespace ariel {
         void attack(Team *enemyTeam) override;
 
         double calculateEnemyScore(Character *enemy, Team *enemyTeam);
+
+        void print() override;
     };
 }
 

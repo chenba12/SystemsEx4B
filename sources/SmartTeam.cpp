@@ -6,7 +6,6 @@ using namespace ariel;
 SmartTeam::SmartTeam(Character *leader) : Team(leader) {}
 
 
-
 /**
  * Calculates a score for each enemy character.
  * The score is based on the enemy's health, type, and proximity to other enemies and our characters.
@@ -45,9 +44,13 @@ double SmartTeam::calculateEnemyScore(Character *enemy, Team *enemyTeam) {
 
     return score;
 }
-//TODO implement
+
 /**
- * does something
+ * The attack method for the SmartTeam class.
+ * This method calculates a score for each enemy character based on their health, type, and distance to other enemies.
+ * It then selects the enemy with the highest score as the target for each of our characters.
+ * The attacking character's type determines the attack strategy: Cowboys will shoot the target,
+ * while Ninjas will either slash the target if it's within distance 1, or move closer to it if it's farther away.
  * @param enemyTeam
  */
 void SmartTeam::attack(Team *enemyTeam) {
@@ -94,6 +97,17 @@ void SmartTeam::attack(Team *enemyTeam) {
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * print by order of insertion
+ */
+void SmartTeam::print() {
+    for (size_t i = 0; i < maxCharacters; ++i) {
+        if (getCharacters().at(i) != nullptr) {
+            std::cout << getCharacters().at(i)->print() << std::endl;
         }
     }
 }
