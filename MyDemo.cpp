@@ -43,10 +43,10 @@ int main() {
     Team team1(create_cowboy());
     Team2 team2(create_oninja());
     SmartTeam smartTeam1(create_tninja());
-    auto deadCowboy = new Cowboy("dead", {0, 0});
+    auto deadNinja = new YoungNinja("dead", {0, 0});
     auto oldNin = new OldNinja("ninja", {0, 0});
-    while (deadCowboy->isAlive()) {
-        oldNin->slash(deadCowboy);
+    while (deadNinja->isAlive()) {
+        oldNin->slash(deadNinja);
     }
 
     try {
@@ -60,8 +60,13 @@ int main() {
         cout << error.what() << endl;
     }
     try {
-        team1.add(deadCowboy);
+        team1.add(deadNinja);
     } catch (std::invalid_argument &error) {
+        cout << error.what() << endl;
+    }
+    try {
+        deadNinja->slash(oldNin);
+    } catch (std::runtime_error &error) {
         cout << error.what() << endl;
     }
     // Adding characters to the teams

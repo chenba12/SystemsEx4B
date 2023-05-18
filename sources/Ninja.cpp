@@ -22,6 +22,7 @@ Ninja::Ninja(std::string name, Point location, int hitPoints, int speed, enum ch
  */
 void Ninja::move(Character *enemy) {
     if (!enemy->isAlive()) throw std::runtime_error("enemy is dead");
+    if (!isAlive()) throw std::runtime_error("character is dead");
     this->setLocation(Point::moveTowards(this->getLocation(), enemy->getLocation(), speed));
 }
 
