@@ -9,9 +9,13 @@ using namespace ariel;
  */
 Team::Team(Character *leader) {
     std::fill(characters.begin(), characters.end(), nullptr);
+    if (leader == nullptr) {
+        throw std::invalid_argument("Got nullptr");
+    }
     if (leader->isTeamMember()) {
         throw std::runtime_error("Leader already in another team");
     }
+
     this->leader = leader;
     this->leader->setTeamMember();
     characters.at(0) = this->leader;
@@ -85,9 +89,8 @@ void Team::deleteArr() const {
  */
 void Team::add(Character *character) {
     if (character == nullptr) throw std::invalid_argument("got nullptr");
-    if (character->isTeamMember()) {
-        throw std::runtime_error("character already in another team");
-    }
+    if (character->isTeamMember())throw std::runtime_error("character already in another team");
+    if (!character->isAlive()) throw std::invalid_argument("Dead character");
     for (size_t i = 0; i < maxCharacters; ++i) {
         if (characters.at(i) == nullptr) {
             characters.at(i) = character;
