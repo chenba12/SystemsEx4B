@@ -12,7 +12,6 @@ namespace ariel {
 
         void print() override;
 
-
     };
 }
 #endif //SYSTEMSEX4A_TEAM2_H

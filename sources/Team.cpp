@@ -15,11 +15,13 @@ Team::Team(Character *leader) {
     if (leader->isTeamMember()) {
         throw std::runtime_error("Leader already in another team");
     }
-
+    if (!leader->isAlive()) {
+        throw std::runtime_error("Leader is dead");
+    }
     this->leader = leader;
+    size = 1;
     this->leader->setTeamMember();
     characters.at(0) = this->leader;
-
 }
 
 /**
@@ -28,14 +30,18 @@ Team::Team(Character *leader) {
  */
 Team::Team(const Team &other)
         : characters(other.characters),
-          leader(new Character(*(other.leader))) {}
+          leader(new Character(*(other.leader))), size(0) {
+    for (size_t i = 0; i < maxCharacters; ++i) {
+        if (characters.at(i) != nullptr) size++;
+    }
+}
 
 /**
  * move copy ctr
  * @param other
  */
 Team::Team(Team &&other) noexcept: characters(other.characters),
-                                   leader(other.leader) { other.leader = nullptr; }
+                                   leader(other.leader), size(0) { other.leader = nullptr; }
 
 /**
  *  copy assigment operator
@@ -47,6 +53,7 @@ Team &Team::operator=(const Team &other) {
         characters = other.characters;
         delete leader;
         leader = new Character(*(other.leader));
+        size = other.size;
     }
     return *this;
 }
@@ -60,6 +67,7 @@ Team &Team::operator=(Team &&other) noexcept {
     if (this != &other) {
         characters = other.characters;
         leader = other.leader;
+        size = other.size;
         other.deleteArr();
     }
     return *this;
@@ -91,14 +99,13 @@ void Team::add(Character *character) {
     if (character == nullptr) throw std::invalid_argument("got nullptr");
     if (character->isTeamMember())throw std::runtime_error("character already in another team");
     if (!character->isAlive()) throw std::invalid_argument("Dead character");
-    for (size_t i = 0; i < maxCharacters; ++i) {
-        if (characters.at(i) == nullptr) {
-            characters.at(i) = character;
-            character->setTeamMember();
-            return;
-        }
+    if (size == maxCharacters) throw std::runtime_error("the team is full");
+    if (characters.at(size) == nullptr) {
+        characters.at(size) = character;
+        character->setTeamMember();
+        size++;
+        return;
     }
-    throw std::runtime_error("the team is full");
 }
 
 /**
@@ -170,7 +177,7 @@ Character *Team::cowboyAttacking(Team *enemyTeam, Character *victim, Character *
  */
 int Team::stillAlive() {
     int counter = 0;
-    for (size_t i = 0; i < maxCharacters; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         if (characters.at(i) != nullptr) {
             if (characters.at(i)->isAlive()) {
                 counter++;
@@ -184,14 +191,14 @@ int Team::stillAlive() {
  * print all the characters in the team cowboys first and then ninjas
  */
 void Team::print() {
-    for (size_t i = 0; i < maxCharacters; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         if (characters.at(i) != nullptr) {
             if (characters.at(i)->getType() == typeCowboy) {
                 std::cout << characters.at(i)->print() << std::endl;
             }
         }
     }
-    for (size_t i = 0; i < maxCharacters; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         if (characters.at(i) != nullptr) {
             if (characters.at(i)->getType() == typeNinja) {
                 std::cout << characters.at(i)->print() << std::endl;
@@ -223,7 +230,7 @@ Character *Team::findClosestTarget(Team *team) {
     double minDistanceFromLeader = std::numeric_limits<double>::max();
     double temp;
     Character *closestCharacter = nullptr;
-    for (size_t i = 0; i < maxCharacters; ++i) {
+    for (size_t i = 0; i < team->size; ++i) {
         if (team->characters.at(i) != nullptr) {
             if (team->characters.at(i)->isAlive()) {
                 temp = leader->distance(team->characters.at(i));
@@ -254,7 +261,9 @@ void Team::swapLeaderIfNeeded() {
     }
 }
 
-
+size_t Team::getSize() const {
+    return size;
+}
 
 
 

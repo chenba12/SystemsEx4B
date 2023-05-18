@@ -15,6 +15,7 @@ namespace ariel {
     private:
         std::array<Character *, maxCharacters> characters{};
         Character *leader;
+        size_t size;
     public:
         explicit Team(Character *leader);
 
@@ -49,6 +50,8 @@ namespace ariel {
         Character *ninjaAttacking(Team *enemyTeam, Character *victim, Character *member);
 
         Character *cowboyAttacking(Team *enemyTeam, Character *victim, Character *member);
+
+        size_t getSize() const;
 
     private:
         void deleteArr() const;

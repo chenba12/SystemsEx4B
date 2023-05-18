@@ -42,7 +42,7 @@ void Ninja::slash(Character *enemy) {
     if (!isAlive())throw std::runtime_error("I'm dead :(");
     if (!enemy->isAlive())throw std::runtime_error("enemy is dead dead :(");
     if (enemy == this) throw std::runtime_error("Can't hit myself :(");
-    if (this->getLocation().distance(enemy->getLocation()) <= 1) {
+    if (this->distance(enemy) <= 1) {
         enemy->hit(ninjaDamage);
     }
 }
