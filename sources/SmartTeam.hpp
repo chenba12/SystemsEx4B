@@ -10,7 +10,8 @@ namespace ariel {
 
         void attack(Team *enemyTeam) override;
 
+        double calculateEnemyScore(Character *enemy, Team *enemyTeam);
     };
 }
 
-#endif //SYSTEMSEX4A_SMARTTEAM_H
+#endif

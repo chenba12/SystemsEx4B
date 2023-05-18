@@ -81,6 +81,7 @@ void Team::deleteArr() const {
  * @throws runtime_error if the team is full or the character to add is in another team
  */
 void Team::add(Character *character) {
+    if (character== nullptr) throw std::invalid_argument("got nullptr");
     if (character->isTeamMember()) {
         throw std::runtime_error("character already in another team");
     }
