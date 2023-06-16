@@ -1,114 +1,115 @@
-#include <map>
 #include "SmartTeam.hpp"
+#include <map>
 
 using namespace ariel;
 
-SmartTeam::SmartTeam(Character *leader) : Team(leader) {}
 
-
-/**
- * Calculates a score for each enemy character.
- * The score is based on the enemy's health, type, and proximity to other enemies and our characters.
- *
- * @param enemy The enemy character whose score we are calculating.
- * @param enemyTeam The team to which the enemy belongs.
- * @return The calculated score for the enemy.
- */
-double SmartTeam::calculateEnemyScore(Character *enemy, Team *enemyTeam) {
+// This function calculates and returns a score for a given enemy.
+// The score is calculated based on several factors:
+// 1. The enemy's health - lower health enemies have a higher score.
+// 2. The type of the character making the attack - different types of characters (Cowboy or different types of Ninjas) adjust the score differently.
+// 3. The number of bullets left (if the character is a Cowboy) - the more bullets left, the higher the score.
+// 4. The proximity of other enemies - the more enemies are near the target enemy, the higher the score.
+double SmartTeam::enemyScore(Character *enemy, Team *enemyTeam, Character *attackingCharacter) {
     double score = 0;
 
-    // Higher score for lower health.
-    score += 1.0 / enemy->getHp();
+    double healthScore = 1.0 / enemy->getHp();
+    score += healthScore * healthScore;
 
-    if (enemy->getType() == typeNinja) {
-        score += 1.0;
+    int speed = 0;
+    if (attackingCharacter->getType() == 0) {
+        auto *cowboy = dynamic_cast<Cowboy *>(attackingCharacter);
+        if (cowboy->hasboolets()) {
+            score += 5 * cowboy->getBullets();
+        }
+    } else if (attackingCharacter->getType() == 1) {
+        speed = youngNinjaSpeed;
+        if (attackingCharacter->distance(enemy) <= 1) {
+            score += 40;
+        }
+    } else if (attackingCharacter->getType() == 2) {
+        speed = trainedNinjaSpeed;
+        if (attackingCharacter->distance(enemy) <= 1) {
+            score += 40;
+        }
+    } else if (attackingCharacter->getType() == 3) {
+        speed = oldNinjaSpeed;
+        if (attackingCharacter->distance(enemy) <= 1) {
+            score += 40;
+        }
     }
 
-    if (enemy->getType() == typeCowboy) {
-        score += 0.5;
-    }
-
-    // Higher score for proximity to other enemies.
+    int nearbyEnemies = 0;
     for (Character *other: enemyTeam->getCharacters()) {
         if (other != enemy && other != nullptr && other->getHp() > 0) {
-            score += 1.0 / enemy->distance(other);
+            double distance = enemy->distance(other);
+            if (distance <= speed) {
+                nearbyEnemies++;
+            }
         }
     }
-
-    // Higher score for proximity to our characters.
-    for (Character *ourCharacter: this->getCharacters()) {
-        if (ourCharacter != nullptr && ourCharacter->getHp() > 0) {
-            score += 1.0 / enemy->distance(ourCharacter);
-        }
-    }
-
+    score += nearbyEnemies;
     return score;
 }
 
-/**
- * The attack method for the SmartTeam class.
- * This method calculates a score for each enemy character based on their health, type, and distance to other enemies.
- * It then selects the enemy with the highest score as the target for each of our characters.
- * The attacking character's type determines the attack strategy: Cowboys will shoot the target,
- * while Ninjas will either slash the target if it's within distance 1, or move closer to it if it's farther away.
- * @param enemyTeam
- */
+// This function makes the SmartTeam attack the enemy team.
+// It does this by iterating over each character in the SmartTeam, and for each character:
+// 1. If the character is not alive, it skips the character.
+// 2. Otherwise, it calculates a score for each enemy in the enemy team.
+// 3. It targets the enemy with the highest score.
+// 4. If the character is a Cowboy and has bullets, it makes the Cowboy shoot the targeted enemy.
+// 5. If the character is a Ninja, it checks the distance to the targeted enemy.
+// 6. If the distance is less than or equal to 1, it makes the Ninja slash the targeted enemy.
+// 7. Otherwise, it makes the Ninja move towards the targeted enemy.
+// 8. If there are no enemies left alive, it breaks the loop.
 void SmartTeam::attack(Team *enemyTeam) {
-// Loop through each of our characters...
-    for (Character *ourCharacter: this->getCharacters()) {
-        if (ourCharacter == nullptr) { // Skip any null characters in the team.
+    //checks before an attack
+    swapLeaderIfNeeded();
+    if (!enemyTeam) throw std::invalid_argument("a nullptr has been given as a pointer");
+    if (enemyTeam->stillAlive() == 0) throw std::runtime_error("cannot attack a dead team");
+    if (stillAlive() == 0) return;
+    if (this == enemyTeam) throw std::runtime_error("group cannot attck itself");
+    for (Character *attackingCharacter: this->getCharacters()) {
+        if (attackingCharacter == nullptr || !attackingCharacter->isAlive()) {
             continue;
         }
-        if (enemyTeam->stillAlive() <= 0) {
-            break;
-        }
-        // Calculate scores for each enemy.
         std::map<Character *, double> scores;
         for (Character *enemy: enemyTeam->getCharacters()) {
-            if (enemy == nullptr || enemy->getHp() <= 0) { // Skip any null or dead enemies.
+            if (enemy == nullptr || enemy->getHp() <= 0) {
                 continue;
             }
-
-            double score = this->calculateEnemyScore(enemy, enemyTeam);
+            double score = this->enemyScore(enemy, enemyTeam, attackingCharacter);
             scores[enemy] = score;
         }
-        // Find the enemy with the highest score.
+
         Character *bestEnemy = nullptr;
         double bestScore = -1;
         for (const auto &pair: scores) {
             if (pair.second > bestScore) {
-                bestScore = pair.second;
                 bestEnemy = pair.first;
+                bestScore = pair.second;
             }
         }
 
-        // If we found an enemy to attack...
         if (bestEnemy != nullptr) {
-            if (ourCharacter->isAlive()) {
-                if (ourCharacter->getType() == typeCowboy) {
-                    auto *cowboy = dynamic_cast<Cowboy *>(ourCharacter);
-                    cowboy->shoot(bestEnemy);
-                } else if (ourCharacter->getType() == typeNinja) {
-                    auto *ninja = dynamic_cast<Ninja *>(ourCharacter);
-                    if (ninja->distance(bestEnemy) <= 1) {
-                        ninja->slash(bestEnemy);
-                    } else {
-                        ninja->move(bestEnemy);
-                    }
+            targetedEnemies.push_back(bestEnemy);
+            if (typeid(*attackingCharacter) == typeid(Cowboy)) {
+                dynamic_cast<Cowboy *>(attackingCharacter)->shoot(bestEnemy);
+            } else if (dynamic_cast<Ninja *>(attackingCharacter) != nullptr) {
+                if (attackingCharacter->distance(bestEnemy) <= 1) {
+                    dynamic_cast<Ninja *>(attackingCharacter)->slash(bestEnemy);
+                } else {
+                    dynamic_cast<Ninja *>(attackingCharacter)->move(bestEnemy);
                 }
             }
         }
-    }
-}
-
-/**
- * print by order of insertion
- */
-void SmartTeam::print() {
-    for (size_t i = 0; i < getSize(); ++i) {
-        if (getCharacters().at(i) != nullptr) {
-            std::cout << getCharacters().at(i)->print() << std::endl;
+        if (enemyTeam->stillAlive() == 0) {
+            break;
         }
     }
+    targetedEnemies.clear();
 }
 
+SmartTeam::SmartTeam(Character *leader) : Team(leader) {
+    targetedEnemies = std::vector<Character *>();
+}
