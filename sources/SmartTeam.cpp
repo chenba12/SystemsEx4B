@@ -113,3 +113,11 @@ void SmartTeam::attack(Team *enemyTeam) {
 SmartTeam::SmartTeam(Character *leader) : Team(leader) {
     targetedEnemies = std::vector<Character *>();
 }
+
+void SmartTeam::print() {
+    for (size_t i = 0; i < getSize(); ++i) {
+        if (getCharacters().at(i) != nullptr) {
+            std::cout << getCharacters().at(i)->print() << std::endl;
+        }
+    }
+}
